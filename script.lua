@@ -56,13 +56,12 @@ Instance.new("UICorner", top)
 local title = Instance.new("TextLabel", top)
 title.Size = UDim2.new(1,0,1,0)
 title.BackgroundTransparency = 1
-title.Text = "TP + NOCLIP"
+title.Text = "TP SYSTEM"
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 20
 title.TextColor3 = Color3.fromRGB(255,60,60)
 
--- ================= DRAG =================
-
+-- DRAG
 local dragging, dragStart, startPos
 
 top.InputBegan:Connect(function(input)
@@ -101,68 +100,98 @@ end)
 
 -- ================= BUTTONS =================
 
-local function createBtn(text, y)
+local function createBtn(text, x, y)
 	local b = Instance.new("TextButton")
 	b.Parent = frame
-	b.Size = UDim2.new(1,-20,0,40)
-	b.Position = UDim2.new(0,10,0,y)
+	b.Size = UDim2.new(0.5,-15,0,40)
+	b.Position = UDim2.new(x,10,y,0)
 	b.Text = text
 	b.BackgroundColor3 = Color3.fromRGB(25,25,40)
 	b.TextColor3 = Color3.new(1,1,1)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 16
+	b.TextSize = 14
 	Instance.new("UICorner", b)
 	return b
 end
 
-local selectBtn = createBtn("[C] Select",60)
-local deleteBtn = createBtn("[T] Delete",110)
-local tpBtn = createBtn("[F] Teleport",160)
-local noclipBtn = createBtn("[R] Noclip : OFF",210)
+-- TP1
+local select1 = createBtn("[C] Select",0,0.2)
+local delete1 = createBtn("[T] Delete",0,0.4)
+local tp1 = createBtn("[F] TP",0,0.6)
+
+-- TP2
+local select2 = createBtn("[V] Select",0.5,0.2)
+local delete2 = createBtn("[Y] Delete",0.5,0.4)
+local tp2 = createBtn("[G] TP",0.5,0.6)
+
+-- Noclip
+local noclipBtn = Instance.new("TextButton")
+noclipBtn.Parent = frame
+noclipBtn.Size = UDim2.new(1,-20,0,40)
+noclipBtn.Position = UDim2.new(0,10,1,-50)
+noclipBtn.Text = "[R] Noclip : OFF"
+noclipBtn.BackgroundColor3 = Color3.fromRGB(25,25,40)
+noclipBtn.TextColor3 = Color3.new(1,1,1)
+noclipBtn.Font = Enum.Font.GothamBold
+noclipBtn.TextSize = 16
+Instance.new("UICorner", noclipBtn)
 
 -- ================= TP =================
 
-local selecting = false
-local marker = nil
+local selecting1, selecting2 = false, false
+local marker1, marker2 = nil, nil
 
-local function createMarker(pos)
-	if marker then return end
-
-	marker = Instance.new("Part")
-	marker.Size = Vector3.new(2,2,2)
-	marker.Position = pos + Vector3.new(0,2,0)
-	marker.Anchored = true
-	marker.CanCollide = false
-	marker.Color = Color3.fromRGB(255,0,0)
-	marker.Material = Enum.Material.Neon
-	marker.Parent = workspace
+local function createMarker(pos, color)
+	local p = Instance.new("Part")
+	p.Size = Vector3.new(2,2,2)
+	p.Position = pos + Vector3.new(0,2,0)
+	p.Anchored = true
+	p.CanCollide = false
+	p.Material = Enum.Material.Glass
+	p.Color = color
+	p.Transparency = 0.3
+	p.Parent = workspace
+	return p
 end
 
-selectBtn.MouseButton1Click:Connect(function()
-	selecting = true
-end)
+-- TP1
+select1.MouseButton1Click:Connect(function() selecting1 = true end)
 
 mouse.Button1Down:Connect(function()
-	if selecting and not marker then
-		createMarker(mouse.Hit.Position)
-		selecting = false
+	if selecting1 and not marker1 then
+		marker1 = createMarker(mouse.Hit.Position, Color3.fromRGB(255,0,0))
+		selecting1 = false
+	end
+	if selecting2 and not marker2 then
+		marker2 = createMarker(mouse.Hit.Position, Color3.fromRGB(0,170,255))
+		selecting2 = false
 	end
 end)
 
-deleteBtn.MouseButton1Click:Connect(function()
-	if marker then
-		marker:Destroy()
-		marker = nil
+delete1.MouseButton1Click:Connect(function()
+	if marker1 then marker1:Destroy() marker1 = nil end
+end)
+
+tp1.MouseButton1Click:Connect(function()
+	if marker1 and player.Character then
+		player.Character.HumanoidRootPart.CFrame = CFrame.new(marker1.Position + Vector3.new(0,3,0))
 	end
 end)
 
-tpBtn.MouseButton1Click:Connect(function()
-	if marker and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-		player.Character.HumanoidRootPart.CFrame = CFrame.new(marker.Position + Vector3.new(0,3,0))
+-- TP2
+select2.MouseButton1Click:Connect(function() selecting2 = true end)
+
+delete2.MouseButton1Click:Connect(function()
+	if marker2 then marker2:Destroy() marker2 = nil end
+end)
+
+tp2.MouseButton1Click:Connect(function()
+	if marker2 and player.Character then
+		player.Character.HumanoidRootPart.CFrame = CFrame.new(marker2.Position + Vector3.new(0,3,0))
 	end
 end)
 
--- ================= TON NOCIP (INCHANGÉ) =================
+-- ================= NOCLIP =================
 
 local noclipEnabled = false
 local connection
@@ -199,40 +228,28 @@ local function updateText()
 	end
 end
 
-updateText()
-
 noclipBtn.MouseButton1Click:Connect(function()
 	setNoclip(not noclipEnabled)
 	updateText()
 end)
+
+updateText()
+
 -- ================= KEYBINDS =================
 
-UIS.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end -- évite le chat
+UIS.InputBegan:Connect(function(input, gp)
+	if gp then return end
 
-	-- Noclip (R)
+	if input.KeyCode == Enum.KeyCode.C then selecting1 = true end
+	if input.KeyCode == Enum.KeyCode.T then if marker1 then marker1:Destroy() marker1=nil end end
+	if input.KeyCode == Enum.KeyCode.F then if marker1 then player.Character.HumanoidRootPart.CFrame = CFrame.new(marker1.Position + Vector3.new(0,3,0)) end end
+
+	if input.KeyCode == Enum.KeyCode.V then selecting2 = true end
+	if input.KeyCode == Enum.KeyCode.Y then if marker2 then marker2:Destroy() marker2=nil end end
+	if input.KeyCode == Enum.KeyCode.G then if marker2 then player.Character.HumanoidRootPart.CFrame = CFrame.new(marker2.Position + Vector3.new(0,3,0)) end end
+
 	if input.KeyCode == Enum.KeyCode.R then
 		setNoclip(not noclipEnabled)
 		updateText()
-	end
-
-	-- Select (C)
-	if input.KeyCode == Enum.KeyCode.C then
-		selecting = true
-	end
-
-	-- Delete (T)
-	if input.KeyCode == Enum.KeyCode.T then
-		if marker then
-			marker:Destroy()
-			marker = nil
-		end
-	end
-
-	-- Teleport (F)
-	if input.KeyCode == Enum.KeyCode.F then
-		if marker and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			player.Character.HumanoidRootPart.CFrame = CFrame.new(marker.Position + Vector3.new(0,3,0))
-		end
 	end
 end)
