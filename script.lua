@@ -164,6 +164,14 @@ local function createMarker(pos, color)
 	return p
 end
 
+-- 🔥 TP1 auto au spawn
+task.spawn(function()
+	local char = player.Character or player.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+
+	marker1 = createMarker(hrp.Position, Color3.fromRGB(255,0,0))
+end)
+
 -- TP1
 select1.MouseButton1Click:Connect(function() selecting1 = true end)
 
