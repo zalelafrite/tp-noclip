@@ -151,16 +151,73 @@ Instance.new("UICorner", noclipBtn)
 local selecting1, selecting2 = false, false
 local marker1, marker2 = nil, nil
 
-local function createMarker(pos, color)
+local function createMarker(pos, color, isRainbow, labelText)
 	local p = Instance.new("Part")
-	p.Size = Vector3.new(2,2,2)
+	p.Size = Vector3.new(2,3,2)
 	p.Position = pos + Vector3.new(0,2,0)
 	p.Anchored = true
 	p.CanCollide = false
-	p.Material = Enum.Material.Glass
+	p.Material = Enum.Material.Neon
+	p.Transparency = 0
 	p.Color = color
-	p.Transparency = 0.3
+
+	-- 💎 forme stylée (losange fake)
+	local mesh = Instance.new("SpecialMesh", p)
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Scale = Vector3.new(1,1.5,1)
+
+	p.Orientation = Vector3.new(45,45,0)
+
 	p.Parent = workspace
+
+	-- 🏷 TEXTE AU DESSUS
+	local billboard = Instance.new("BillboardGui", p)
+	billboard.Size = UDim2.new(0,100,0,40)
+	billboard.StudsOffset = Vector3.new(0,3,0)
+	billboard.AlwaysOnTop = true
+
+	local text = Instance.new("TextLabel", billboard)
+	text.Size = UDim2.new(1,0,1,0)
+	text.BackgroundTransparency = 1
+	text.Text = labelText
+	text.Font = Enum.Font.GothamBlack
+	text.TextScaled = true
+	text.TextColor3 = Color3.new(1,1,1)
+	text.TextStrokeTransparency = 0 -- contour noir
+
+	-- 🌈 RAINBOW (TP1)
+	if isRainbow then
+		task.spawn(function()
+			while p.Parent do
+				local hue = (tick() % 5) / 5
+				p.Color = Color3.fromHSV(hue,1,1)
+				task.wait(0.05)
+			end
+		end)
+	end
+
+	-- 🌊 ANIMATION FLOAT + ROTATION
+	task.spawn(function()
+		local baseY = p.Position.Y
+		while p.Parent do
+			local t = tick()
+
+			-- flotte
+			local yOffset = math.sin(t * 2) * 0.5
+
+			p.Position = Vector3.new(
+				p.Position.X,
+				baseY + yOffset,
+				p.Position.Z
+			)
+
+			-- rotation
+			p.Orientation = p.Orientation + Vector3.new(0,1,0)
+
+			task.wait()
+		end
+	end)
+
 	return p
 end
 
@@ -169,7 +226,14 @@ task.spawn(function()
 	local char = player.Character or player.CharacterAdded:Wait()
 	local hrp = char:WaitForChild("HumanoidRootPart")
 
-	marker1 = createMarker(hrp.Position, Color3.fromRGB(255,0,0))
+	task.wait(0.2) -- sécurité
+
+	marker1 = createMarker(
+		hrp.Position,
+		Color3.new(),
+		true,
+		"TP1"
+	)
 end)
 
 -- TP1
@@ -177,11 +241,11 @@ select1.MouseButton1Click:Connect(function() selecting1 = true end)
 
 mouse.Button1Down:Connect(function()
 	if selecting1 and not marker1 then
-		marker1 = createMarker(mouse.Hit.Position, Color3.fromRGB(255,0,0))
+		marker1 = createMarker(mouse.Hit.Position, Color3.new(), true, "TP1")
 		selecting1 = false
 	end
 	if selecting2 and not marker2 then
-		marker2 = createMarker(mouse.Hit.Position, Color3.fromRGB(0,170,255))
+		marker2 = createMarker(mouse.Hit.Position, Color3.fromRGB(255,255,255), false, "TP2")
 		selecting2 = false
 	end
 end)
