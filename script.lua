@@ -295,7 +295,7 @@ flySpeedBox.TextSize = 14
 Instance.new("UICorner", flySpeedBox)
 
 local flying = false
-local flySpeed = 60
+local flySpeed = 150
 local bv, bg
 
 local function startFly()
