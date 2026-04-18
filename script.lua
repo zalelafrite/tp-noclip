@@ -413,7 +413,7 @@ flySpeedBox.FocusLost:Connect(function(enterPressed)
 	if enterPressed then
 		local num = tonumber(flySpeedBox.Text)
 		if num then
-			flySpeed = math.clamp(num, 10, 500)
+			flySpeed = math.clamp(num, 10, 10000)
 			flySpeedBox.Text = tostring(flySpeed)
 		else
 			flySpeedBox.Text = tostring(flySpeed)
