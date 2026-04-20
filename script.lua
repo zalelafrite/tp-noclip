@@ -6,23 +6,16 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
--- 🔥 OPTIMISATION PROPRE (SAFE + DEBUG)
+-- 🔥 SAFE OPTIMIZATION (NE CASSE RIEN)
 
 task.spawn(function()
-
 	repeat task.wait() until game:IsLoaded()
-	task.wait(1)
-
-	print("OPTIMIZATION STARTED")
+	task.wait(2)
 
 	local lighting = game:GetService("Lighting")
 
-	-- ===== VISION =====
-	lighting.FogEnd = 1e10
-	lighting.FogStart = 0
-
-	-- ===== LIGHTING EFFECTS =====
-	for _,v in pairs(lighting:GetDescendants()) do
+	-- enlève effets lourds seulement
+	for _,v in pairs(lighting:GetChildren()) do
 		if v:IsA("BlurEffect")
 		or v:IsA("SunRaysEffect")
 		or v:IsA("BloomEffect")
@@ -31,32 +24,21 @@ task.spawn(function()
 		end
 	end
 
-	-- ===== WORKSPACE =====
-	local count = 0
-
+	-- optimise léger (PAS destructif)
 	for _,v in pairs(workspace:GetDescendants()) do
 
 		if v:IsA("ParticleEmitter")
-		or v:IsA("Trail")
-		or v:IsA("Smoke")
-		or v:IsA("Fire")
-		or v:IsA("Sparkles") then
+		or v:IsA("Trail") then
 			v.Enabled = false
-			count += 1
 		end
 
 		if v:IsA("BasePart") then
-			v.Material = Enum.Material.Plastic
 			v.Reflectance = 0
 		end
 
-		if v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 0.2
-		end
 	end
 
-	print("Optimized objects:", count)
-
+	print("Optimization loaded safely")
 end)
 
 -- REMOVE ANIM AU START
