@@ -41,6 +41,26 @@ task.spawn(function()
 	print("Optimization loaded safely")
 end)
 
+-- 🔥 BOOST SUPPLÉMENTAIRE SAFE
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+	-- enlève petits effets invisibles mais lourds
+	if v:IsA("Smoke")
+	or v:IsA("Fire")
+	or v:IsA("Sparkles") then
+		v.Enabled = false
+	end
+
+	-- simplifie lumières dynamiques
+	if v:IsA("PointLight")
+	or v:IsA("SpotLight")
+	or v:IsA("SurfaceLight") then
+		v.Brightness = 0
+	end
+
+end
+
 -- REMOVE ANIM AU START
 local function removeAnims(char)
 	local humanoid = char:WaitForChild("Humanoid")
