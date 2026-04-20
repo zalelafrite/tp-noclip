@@ -6,6 +6,57 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
+-- 🔥 OPTIMISATION CLIENT
+
+task.spawn(function()
+
+	-- Lighting
+	local lighting = game:GetService("Lighting")
+	lighting.GlobalShadows = false
+	lighting.FogEnd = 9e9
+	lighting.Brightness = 1
+
+	for _,v in pairs(lighting:GetDescendants()) do
+		if v:IsA("BlurEffect")
+		or v:IsA("SunRaysEffect")
+		or v:IsA("ColorCorrectionEffect")
+		or v:IsA("BloomEffect")
+		or v:IsA("DepthOfFieldEffect") then
+			v.Enabled = false
+		end
+	end
+
+	-- Terrain
+	local terrain = workspace:FindFirstChildOfClass("Terrain")
+	if terrain then
+		terrain.WaterWaveSize = 0
+		terrain.WaterWaveSpeed = 0
+		terrain.WaterReflectance = 0
+		terrain.WaterTransparency = 1
+	end
+
+	-- 🔥 supprimer effets lourds
+	for _,v in pairs(workspace:GetDescendants()) do
+		if v:IsA("ParticleEmitter")
+		or v:IsA("Trail")
+		or v:IsA("Smoke")
+		or v:IsA("Fire")
+		or v:IsA("Sparkles") then
+			v.Enabled = false
+		end
+
+		if v:IsA("Decal") or v:IsA("Texture") then
+			v.Transparency = 1
+		end
+
+		if v:IsA("BasePart") then
+			v.Material = Enum.Material.SmoothPlastic
+			v.Reflectance = 0
+		end
+	end
+
+end)
+
 -- REMOVE ANIM AU START
 local function removeAnims(char)
 	local humanoid = char:WaitForChild("Humanoid")
