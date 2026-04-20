@@ -6,6 +6,31 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
+-- REMOVE ANIM AU START
+local function removeAnims(char)
+	local humanoid = char:WaitForChild("Humanoid")
+
+	humanoid:ChangeState(Enum.HumanoidStateType.Running)
+
+	local animate = char:FindFirstChild("Animate")
+	if animate then
+		animate:Destroy()
+	end
+
+	for _,track in pairs(humanoid:GetPlayingAnimationTracks()) do
+		track:Stop()
+	end
+end
+
+if player.Character then
+	removeAnims(player.Character)
+end
+
+player.CharacterAdded:Connect(function(char)
+	task.wait(0.5)
+	removeAnims(char)
+end)
+
 -- ================= GUI =================
 
 local gui = Instance.new("ScreenGui")
@@ -151,6 +176,10 @@ end)
 mini.MouseButton1Click:Connect(function()
 	animate(true)
 end)
+
+-- UI déjà réduite au lancement
+task.wait(0.1)
+animate(false)
 
 -- DRAG
 local dragging, dragStart, startPos
