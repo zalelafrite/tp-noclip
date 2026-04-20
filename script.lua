@@ -6,20 +6,22 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
--- 🔥 OPTIMISATION PROPRE (SANS PERTE DE VISION)
+-- 🔥 OPTIMISATION PROPRE (SAFE + DEBUG)
 
 task.spawn(function()
 
+	repeat task.wait() until game:IsLoaded()
+	task.wait(1)
+
+	print("OPTIMIZATION STARTED")
+
 	local lighting = game:GetService("Lighting")
 
-	-- ===== GARDER LA VISION =====
+	-- ===== VISION =====
 	lighting.FogEnd = 1e10
 	lighting.FogStart = 0
 
-	-- ❌ on touche PAS à QualityLevel
-	-- ❌ on touche PAS au streaming
-
-	-- ===== SUPPRIMER EFFETS LOURDS =====
+	-- ===== LIGHTING EFFECTS =====
 	for _,v in pairs(lighting:GetDescendants()) do
 		if v:IsA("BlurEffect")
 		or v:IsA("SunRaysEffect")
@@ -29,34 +31,31 @@ task.spawn(function()
 		end
 	end
 
-	-- ===== ALLÉGER LES OBJETS =====
+	-- ===== WORKSPACE =====
+	local count = 0
+
 	for _,v in pairs(workspace:GetDescendants()) do
 
-		-- 🔥 enlever particules (gros gain FPS)
 		if v:IsA("ParticleEmitter")
 		or v:IsA("Trail")
 		or v:IsA("Smoke")
 		or v:IsA("Fire")
 		or v:IsA("Sparkles") then
 			v.Enabled = false
+			count += 1
 		end
 
-		-- 🔥 simplifier matériaux (gros gain)
 		if v:IsA("BasePart") then
 			v.Material = Enum.Material.Plastic
 			v.Reflectance = 0
 		end
 
-		-- 🔥 alléger textures sans les supprimer
 		if v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 0.2 -- visible mais + léger
+			v.Transparency = 0.2
 		end
 	end
 
-end)
-
-	-- ===== BOOST FPS SUPPLÉMENTAIRE =====
-	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+	print("Optimized objects:", count)
 
 end)
 
