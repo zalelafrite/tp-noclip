@@ -6,44 +6,49 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
--- 🔥 FULL PLASTIC FAST LOAD (SANS FREEZE)
+-- 🔥 ULTRA OPTIMISATION (UNE SEULE PASSE, 0 FREEZE)
 
 task.spawn(function()
 	repeat task.wait() until game:IsLoaded()
 
 	local playerChar = player.Character
+	local i = 0
 
-	local objects = workspace:GetDescendants()
-	local total = #objects
+	for _,v in ipairs(workspace:GetDescendants()) do
+		i += 1
 
-	local batchSize = 300 -- 🔥 nombre d'objets par frame
-
-	for i = 1, total, batchSize do
-		
-		for j = i, math.min(i + batchSize - 1, total) do
-			local v = objects[j]
-
-			if v:IsA("BasePart") then
-				if not playerChar or not v:IsDescendantOf(playerChar) then
-					v.Material = Enum.Material.Plastic
-					v.Reflectance = 0
-				end
+		-- ===== BASEPART =====
+		if v:IsA("BasePart") then
+			if not playerChar or not v:IsDescendantOf(playerChar) then
+				v.Material = Enum.Material.Plastic
+				v.Reflectance = 0
 			end
 		end
 
-		task.wait() -- 🔥 laisse respirer le jeu
+		-- ===== PARTICLES =====
+		if v:IsA("ParticleEmitter")
+		or v:IsA("Trail")
+		or v:IsA("Smoke")
+		or v:IsA("Fire")
+		or v:IsA("Sparkles") then
+			v.Enabled = false
+		end
+
+		-- ===== LIGHTS =====
+		if v:IsA("PointLight")
+		or v:IsA("SpotLight")
+		or v:IsA("SurfaceLight") then
+			v.Brightness = 0
+		end
+
+		-- 🔥 pause tous les 50 objets (important)
+		if i % 50 == 0 then
+			task.wait()
+		end
 	end
-end)
 
--- 🔥 SAFE OPTIMIZATION (NE CASSE RIEN)
-
-task.spawn(function()
-	repeat task.wait() until game:IsLoaded()
-	task.wait(2)
-
+	-- ===== LIGHTING =====
 	local lighting = game:GetService("Lighting")
-
-	-- enlève effets lourds seulement
 	for _,v in pairs(lighting:GetChildren()) do
 		if v:IsA("BlurEffect")
 		or v:IsA("SunRaysEffect")
@@ -53,40 +58,8 @@ task.spawn(function()
 		end
 	end
 
-	-- optimise léger (PAS destructif)
-	for _,v in pairs(workspace:GetDescendants()) do
-
-		if v:IsA("ParticleEmitter")
-		or v:IsA("Trail") then
-			v.Enabled = false
-		end
-
-		if v:IsA("BasePart") then
-			v.Reflectance = 0
-		end
-
-	end
+	print("OPTIM DONE (NO FREEZE)")
 end)
-
--- 🔥 BOOST SUPPLÉMENTAIRE SAFE
-
-for _,v in pairs(workspace:GetDescendants()) do
-
-	-- enlève petits effets invisibles mais lourds
-	if v:IsA("Smoke")
-	or v:IsA("Fire")
-	or v:IsA("Sparkles") then
-		v.Enabled = false
-	end
-
-	-- simplifie lumières dynamiques
-	if v:IsA("PointLight")
-	or v:IsA("SpotLight")
-	or v:IsA("SurfaceLight") then
-		v.Brightness = 0
-	end
-
-end
 
 -- REMOVE ANIM AU START
 local function removeAnims(char)
