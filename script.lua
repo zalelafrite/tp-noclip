@@ -6,15 +6,19 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
--- 🔥 OPTIMISATION CLIENT
+-- 🔥 ULTRA LOW MODE (FPS BOOST + VISION LOIN)
 
 task.spawn(function()
 
-	-- Lighting
 	local lighting = game:GetService("Lighting")
+	local terrain = workspace:FindFirstChildOfClass("Terrain")
+
+	-- ===== LIGHTING =====
 	lighting.GlobalShadows = false
-	lighting.FogEnd = 9e9
+	lighting.FogEnd = 1e10 -- 🔥 vision très loin
 	lighting.Brightness = 1
+	lighting.EnvironmentDiffuseScale = 0
+	lighting.EnvironmentSpecularScale = 0
 
 	for _,v in pairs(lighting:GetDescendants()) do
 		if v:IsA("BlurEffect")
@@ -26,8 +30,7 @@ task.spawn(function()
 		end
 	end
 
-	-- Terrain
-	local terrain = workspace:FindFirstChildOfClass("Terrain")
+	-- ===== TERRAIN =====
 	if terrain then
 		terrain.WaterWaveSize = 0
 		terrain.WaterWaveSpeed = 0
@@ -35,8 +38,10 @@ task.spawn(function()
 		terrain.WaterTransparency = 1
 	end
 
-	-- 🔥 supprimer effets lourds
+	-- ===== WORKSPACE CLEAN =====
 	for _,v in pairs(workspace:GetDescendants()) do
+
+		-- 🔥 enlever effets lourds
 		if v:IsA("ParticleEmitter")
 		or v:IsA("Trail")
 		or v:IsA("Smoke")
@@ -45,15 +50,20 @@ task.spawn(function()
 			v.Enabled = false
 		end
 
+		-- 🔥 alléger textures sans tout cacher
 		if v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 1
+			v.Transparency = 0.5 -- 👈 visible mais léger
 		end
 
+		-- 🔥 simplifier matériaux
 		if v:IsA("BasePart") then
-			v.Material = Enum.Material.SmoothPlastic
+			v.Material = Enum.Material.Plastic
 			v.Reflectance = 0
 		end
 	end
+
+	-- ===== BOOST FPS SUPPLÉMENTAIRE =====
+	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
 
 end)
 
