@@ -61,6 +61,97 @@ title.Font = Enum.Font.GothamBlack
 title.TextSize = 20
 title.TextColor3 = Color3.fromRGB(255,60,60)
 
+local minimize = Instance.new("TextButton", top)
+minimize.Size = UDim2.new(0,30,0,30)
+minimize.Position = UDim2.new(1,-35,0.5,-15)
+minimize.Text = "-"
+minimize.BackgroundColor3 = Color3.fromRGB(30,30,40)
+minimize.TextColor3 = Color3.new(1,1,1)
+minimize.Font = Enum.Font.GothamBold
+minimize.TextSize = 20
+Instance.new("UICorner", minimize)
+
+local mini = Instance.new("TextButton", gui)
+mini.Size = UDim2.new(0,60,0,60)
+mini.Position = UDim2.new(1,-70,0.5,-30)
+mini.BackgroundColor3 = Color3.fromRGB(10,10,15)
+mini.Visible = false
+mini.Text = ""
+mini.AutoButtonColor = false
+Instance.new("UICorner", mini)
+
+local zText = Instance.new("TextLabel", mini)
+zText.Size = UDim2.new(1,0,1,0)
+zText.BackgroundTransparency = 1
+zText.Text = "Z"
+zText.Font = Enum.Font.GothamBlack
+zText.TextScaled = true
+zText.TextColor3 = Color3.fromRGB(255,0,0)
+
+task.spawn(function()
+	while true do
+		local t = tick()
+		local hue = 0.02 + math.sin(t*2)*0.02
+		zText.TextColor3 = Color3.fromHSV(hue, 1, 1)
+		task.wait(0.05)
+	end
+end)
+
+local TweenService = game:GetService("TweenService")
+
+-- positions
+local openPos = frame.Position
+local closedPos = UDim2.new(1, 50, openPos.Y.Scale, openPos.Y.Offset)
+
+-- animation
+local function animate(open)
+
+	if open then
+		frame.Visible = true
+		border.Visible = true
+
+		frame.Position = closedPos
+		border.Position = UDim2.new(closedPos.X.Scale, closedPos.X.Offset - 8, closedPos.Y.Scale, closedPos.Y.Offset - 8)
+
+		TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Position = openPos
+		}):Play()
+
+		TweenService:Create(border, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Position = UDim2.new(openPos.X.Scale, openPos.X.Offset - 8, openPos.Y.Scale, openPos.Y.Offset - 8)
+		}):Play()
+
+		mini.Visible = false
+
+	else
+		local tween1 = TweenService:Create(frame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Position = closedPos
+		})
+
+		local tween2 = TweenService:Create(border, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Position = UDim2.new(closedPos.X.Scale, closedPos.X.Offset - 8, closedPos.Y.Scale, closedPos.Y.Offset - 8)
+		})
+
+		tween1:Play()
+		tween2:Play()
+
+		tween1.Completed:Connect(function()
+			frame.Visible = false
+			border.Visible = false
+			mini.Visible = true
+		end)
+	end
+end
+
+-- boutons
+minimize.MouseButton1Click:Connect(function()
+	animate(false)
+end)
+
+mini.MouseButton1Click:Connect(function()
+	animate(true)
+end)
+
 -- DRAG
 local dragging, dragStart, startPos
 
