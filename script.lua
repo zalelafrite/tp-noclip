@@ -6,30 +6,34 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
--- 🔥 FULL PLASTIC MODE (MAX FPS)
+-- 🔥 FULL PLASTIC FAST LOAD (SANS FREEZE)
 
 task.spawn(function()
 	repeat task.wait() until game:IsLoaded()
-	task.wait(2)
 
-	local count = 0
+	local playerChar = player.Character
 
-	for _,v in pairs(workspace:GetDescendants()) do
-		if v:IsA("BasePart") then
-			
-			-- évite ton personnage
-			if not v:IsDescendantOf(player.Character or Instance.new("Model")) then
-				v.Material = Enum.Material.Plastic
-				v.Reflectance = 0
-				count += 1
+	local objects = workspace:GetDescendants()
+	local total = #objects
+
+	local batchSize = 300 -- 🔥 nombre d'objets par frame
+
+	for i = 1, total, batchSize do
+		
+		for j = i, math.min(i + batchSize - 1, total) do
+			local v = objects[j]
+
+			if v:IsA("BasePart") then
+				if not playerChar or not v:IsDescendantOf(playerChar) then
+					v.Material = Enum.Material.Plastic
+					v.Reflectance = 0
+				end
 			end
-
 		end
+
+		task.wait() -- 🔥 laisse respirer le jeu
 	end
-
-	print("FULL PLASTIC APPLIED:", count)
 end)
-
 
 -- 🔥 SAFE OPTIMIZATION (NE CASSE RIEN)
 
@@ -62,8 +66,6 @@ task.spawn(function()
 		end
 
 	end
-
-	print("Optimization loaded safely")
 end)
 
 -- 🔥 BOOST SUPPLÉMENTAIRE SAFE
