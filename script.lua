@@ -6,6 +6,31 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
+-- 🔥 FULL PLASTIC MODE (MAX FPS)
+
+task.spawn(function()
+	repeat task.wait() until game:IsLoaded()
+	task.wait(2)
+
+	local count = 0
+
+	for _,v in pairs(workspace:GetDescendants()) do
+		if v:IsA("BasePart") then
+			
+			-- évite ton personnage
+			if not v:IsDescendantOf(player.Character or Instance.new("Model")) then
+				v.Material = Enum.Material.Plastic
+				v.Reflectance = 0
+				count += 1
+			end
+
+		end
+	end
+
+	print("FULL PLASTIC APPLIED:", count)
+end)
+
+
 -- 🔥 SAFE OPTIMIZATION (NE CASSE RIEN)
 
 task.spawn(function()
