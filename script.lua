@@ -6,24 +6,40 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
--- 🔥 ULTRA LOW MODE (FPS BOOST + VISION LOIN)
-
 task.spawn(function()
 
 	local lighting = game:GetService("Lighting")
 	local terrain = workspace:FindFirstChildOfClass("Terrain")
+	local player = game.Players.LocalPlayer
+	local cam = workspace.CurrentCamera
 
-	-- ===== LIGHTING =====
+	-- ===== VISION =====
+	lighting.FogEnd = 1e10
+	lighting.FogStart = 0
+
+	-- 🔥 augmente distance caméra
+	player.CameraMaxZoomDistance = 100000
+	player.CameraMinZoomDistance = 0.5
+
+	-- 🔥 force caméra à voir loin
+	if cam then
+		cam.FieldOfView = 90
+	end
+
+	-- ===== STREAMING (IMPORTANT) =====
+	if workspace.StreamingEnabled then
+		workspace.StreamingTargetRadius = 100000
+		workspace.StreamingMinRadius = 100000
+	end
+
+	-- ===== LIGHTING CLEAN =====
 	lighting.GlobalShadows = false
-	lighting.FogEnd = 1e10 -- 🔥 vision très loin
-	lighting.Brightness = 1
 	lighting.EnvironmentDiffuseScale = 0
 	lighting.EnvironmentSpecularScale = 0
 
 	for _,v in pairs(lighting:GetDescendants()) do
 		if v:IsA("BlurEffect")
 		or v:IsA("SunRaysEffect")
-		or v:IsA("ColorCorrectionEffect")
 		or v:IsA("BloomEffect")
 		or v:IsA("DepthOfFieldEffect") then
 			v.Enabled = false
@@ -38,29 +54,7 @@ task.spawn(function()
 		terrain.WaterTransparency = 1
 	end
 
-	-- ===== WORKSPACE CLEAN =====
-	for _,v in pairs(workspace:GetDescendants()) do
-
-		-- 🔥 enlever effets lourds
-		if v:IsA("ParticleEmitter")
-		or v:IsA("Trail")
-		or v:IsA("Smoke")
-		or v:IsA("Fire")
-		or v:IsA("Sparkles") then
-			v.Enabled = false
-		end
-
-		-- 🔥 alléger textures sans tout cacher
-		if v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 0.5 -- 👈 visible mais léger
-		end
-
-		-- 🔥 simplifier matériaux
-		if v:IsA("BasePart") then
-			v.Material = Enum.Material.Plastic
-			v.Reflectance = 0
-		end
-	end
+end)
 
 	-- ===== BOOST FPS SUPPLÉMENTAIRE =====
 	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
