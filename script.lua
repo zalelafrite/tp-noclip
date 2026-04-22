@@ -504,8 +504,7 @@ UIS.InputBegan:Connect(function(input, gp)
 	if marker1 then
 		player.Character.HumanoidRootPart.CFrame = CFrame.new(marker1.Position + Vector3.new(0,3,0))
 	end
-
-	task.delay(2, function()
+			task.delay(1, function()
 	player:Kick("Brainrot stole successfully ✅")
 end)
 
