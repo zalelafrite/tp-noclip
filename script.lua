@@ -505,7 +505,7 @@ UIS.InputBegan:Connect(function(input, gp)
 		player.Character.HumanoidRootPart.CFrame = CFrame.new(marker1.Position + Vector3.new(0,3,0))
 	end
 
-	task.delay(0.5, function()
+	task.delay(2, function()
 	player:Kick("Brainrot stole successfully ✅")
 end)
 
