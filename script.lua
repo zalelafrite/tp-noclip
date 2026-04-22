@@ -500,13 +500,6 @@ UIS.InputBegan:Connect(function(input, gp)
 	if input.KeyCode == Enum.KeyCode.C then selecting1 = true end
 	if input.KeyCode == Enum.KeyCode.T then if marker1 then marker1:Destroy() marker1=nil end end
 	if input.KeyCode == Enum.KeyCode.F then if marker1 then player.Character.HumanoidRootPart.CFrame = CFrame.new(marker1.Position + Vector3.new(0,3,0)) end end
-	if input.KeyCode == Enum.KeyCode.F then
-	if marker1 then
-		player.Character.HumanoidRootPart.CFrame = CFrame.new(marker1.Position + Vector3.new(0,3,0))
-	end
-			task.delay(1, function()
-	player:Kick("Brainrot stole successfully ✅")
-end)
 
 	if input.KeyCode == Enum.KeyCode.V then selecting2 = true end
 	if input.KeyCode == Enum.KeyCode.Y then if marker2 then marker2:Destroy() marker2=nil end end
