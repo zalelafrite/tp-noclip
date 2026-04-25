@@ -218,6 +218,86 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
+local TeleportService = game:GetService("TeleportService")
+
+-- ===== FRAME GAUCHE =====
+local leftFrame = Instance.new("Frame", gui)
+leftFrame.Size = UDim2.new(0, 180, 0, 90)
+leftFrame.Position = UDim2.new(0, 20, 0.5, -45)
+leftFrame.BackgroundColor3 = Color3.fromRGB(10,10,15)
+leftFrame.Active = true
+Instance.new("UICorner", leftFrame)
+
+-- bord stylé
+local leftStroke = Instance.new("UIStroke", leftFrame)
+leftStroke.Color = Color3.fromRGB(255,60,60)
+leftStroke.Thickness = 2
+
+-- titre
+local leftTitle = Instance.new("TextLabel", leftFrame)
+leftTitle.Size = UDim2.new(1,0,0,30)
+leftTitle.BackgroundTransparency = 1
+leftTitle.Text = "SERVER"
+leftTitle.Font = Enum.Font.GothamBlack
+leftTitle.TextSize = 16
+leftTitle.TextColor3 = Color3.fromRGB(255,60,60)
+
+-- bouton
+local hopBtn = Instance.new("TextButton", leftFrame)
+hopBtn.Size = UDim2.new(1,-20,0,40)
+hopBtn.Position = UDim2.new(0,10,0,40)
+hopBtn.Text = "[H] Rejoin"
+hopBtn.BackgroundColor3 = Color3.fromRGB(25,25,40)
+hopBtn.TextColor3 = Color3.new(1,1,1)
+hopBtn.Font = Enum.Font.GothamBold
+hopBtn.TextSize = 14
+Instance.new("UICorner", hopBtn)
+
+-- ===== DRAG =====
+local dragging2 = false
+local dragStart2, startPos2
+
+leftFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging2 = true
+		dragStart2 = input.Position
+		startPos2 = leftFrame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging2 = false
+			end
+		end)
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if dragging2 and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart2
+		leftFrame.Position = UDim2.new(
+			startPos2.X.Scale,
+			startPos2.X.Offset + delta.X,
+			startPos2.Y.Scale,
+			startPos2.Y.Offset + delta.Y
+		)
+	end
+end)
+
+-- ===== ACTION =====
+local function serverHop()
+	TeleportService:Teleport(game.PlaceId, player)
+end
+
+hopBtn.MouseButton1Click:Connect(serverHop)
+
+-- keybind
+UIS.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.H then
+		serverHop()
+	end
+end)
+
 -- ================= BUTTONS =================
 
 local function createBtn(text, x, y)
