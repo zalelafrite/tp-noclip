@@ -289,19 +289,34 @@ local function serverHop()
 	local placeId = game.PlaceId
 	local jobId = game.JobId
 
-	local url = "https://games.roblox.com/v1/games/"..placeId.."/servers/Public?sortOrder=Asc&limit=100"
-	
-	local success, response = pcall(function()
-		return game:HttpGet(url)
-	end)
+	local cursor = ""
+	local found = false
 
-	if not success then return end
+	while not found do
+		local url = "https://games.roblox.com/v1/games/"..placeId.."/servers/Public?sortOrder=Asc&limit=100&cursor="..cursor
+		
+		local success, response = pcall(function()
+			return game:HttpGet(url)
+		end)
 
-	local data = HttpService:JSONDecode(response)
+		if not success then break end
 
-	for _,server in pairs(data.data) do
-		if server.playing < server.maxPlayers and server.id ~= jobId then
-			TeleportService:TeleportToPlaceInstance(placeId, server.id, player)
+		local data = HttpService:JSONDecode(response)
+
+		for _,server in pairs(data.data) do
+			if server.playing < server.maxPlayers 
+			and server.id ~= jobId 
+			and server.playing > 0 then
+				
+				found = true
+				TeleportService:TeleportToPlaceInstance(placeId, server.id, player)
+				break
+			end
+		end
+
+		if data.nextPageCursor then
+			cursor = data.nextPageCursor
+		else
 			break
 		end
 	end
