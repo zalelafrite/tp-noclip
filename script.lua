@@ -218,6 +218,7 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
+local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 
 -- ===== FRAME GAUCHE =====
@@ -285,7 +286,25 @@ end)
 
 -- ===== ACTION =====
 local function serverHop()
-	TeleportService:Teleport(game.PlaceId, player)
+	local placeId = game.PlaceId
+	local jobId = game.JobId
+
+	local url = "https://games.roblox.com/v1/games/"..placeId.."/servers/Public?sortOrder=Asc&limit=100"
+	
+	local success, response = pcall(function()
+		return game:HttpGet(url)
+	end)
+
+	if not success then return end
+
+	local data = HttpService:JSONDecode(response)
+
+	for _,server in pairs(data.data) do
+		if server.playing < server.maxPlayers and server.id ~= jobId then
+			TeleportService:TeleportToPlaceInstance(placeId, server.id, player)
+			break
+		end
+	end
 end
 
 hopBtn.MouseButton1Click:Connect(serverHop)
